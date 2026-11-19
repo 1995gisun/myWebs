@@ -306,12 +306,8 @@
   const drum = $('#drum'), dugu = $('#drum .dugu'), reveal = $('#reveal'), flash = $('#flash');
   const actions = $('#actions'), skipBtn = $('#skip');
 
-  const SCRIPTS = [
-    ['이것은 단순한 메시지가 아니다', '인류의 운명을 바꿀', '단 하나의 진실', '준비되셨습니까'],
-    ['전 세계가 숨을 죽였다', '수많은 이들이 이 순간을 기다렸다', '더 이상 숨길 수 없다', '지금 공개합니다'],
-    ['아무도 예상하지 못했다', '그 누구도 감히 말하지 못했다', '하지만 오늘', '모든 것이 밝혀진다'],
-  ];
-  const SUBS = ['IN A WORLD', 'ONE MESSAGE', 'NO TURNING BACK', 'THE TRUTH'];
+  const INTRO_LINE = '준비되셨습니까?';
+  const INTRO_SUB = 'ARE YOU READY';
 
   // ---------- 토스트 ----------
   let toastTimer;
@@ -609,10 +605,9 @@
     newIntroBus();
     running = true;
 
-    const script = SCRIPTS[(Math.random() * SCRIPTS.length) | 0];
     const T0 = ctx ? ctx.currentTime + 0.1 : 0;
-    const LINE = 2.4;          // 자막 간격(초)
-    const ROLL_START = 0.6 + LINE * 4;   // ≈ 10.2s
+    const LINE_AT = 0.6;                 // 자막 등장(초)
+    const ROLL_START = LINE_AT + 2.6;    // 자막이 사라질 무렵 두구두구 시작
     const ROLL_LEN = 4.2;
     const REVEAL = ROLL_START + ROLL_LEN + 0.7;
 
@@ -622,18 +617,12 @@
 
     if (ctx) {
       drone(T0, ROLL_START + ROLL_LEN);
-      // 자막마다 둥-
-      for (let i = 0; i < 4; i++) {
-        const t = T0 + 0.6 + LINE * i;
-        boom(t, 0.9);
-        if (i >= 2) boom(t + 0.35, 0.6);
-        if (i === 3) { boom(t + 0.7, 0.7); boom(t + 1.05, 0.8); }
-      }
+      // 둥- 둥 둥 둥
+      boom(T0 + LINE_AT, 1);
+      [0.35, 0.7, 1.05].forEach((d, i) => boom(T0 + LINE_AT + d, 0.6 + i * 0.1));
     }
-    script.forEach((line, i) => {
-      later((0.6 + LINE * i) * 1000, () => { showLine(line, SUBS[i]); impact(i >= 2 ? 10 : 6); });
-      if (i >= 2) later((0.6 + LINE * i + 0.35) * 1000, () => impact(6));
-    });
+    later(LINE_AT * 1000, () => { showLine(INTRO_LINE, INTRO_SUB); impact(10); });
+    [0.35, 0.7, 1.05].forEach((d) => later((LINE_AT + d) * 1000, () => impact(6)));
 
     // 두구두구
     later(ROLL_START * 1000, () => {
