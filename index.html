@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>myWebs</title>
+<meta name="description" content="쓸데없이 재밌는 것들을 모아둔 작은 전시관">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f3ec;
+    --card: #ffffff;
+    --ink: #1c1a17;
+    --muted: #6f6a60;
+    --line: #e3ddd0;
+    --accent: #e0661b;
+    --shadow: 0 1px 2px rgba(40, 30, 10, .06), 0 8px 24px rgba(40, 30, 10, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14120f;
+      --card: #1e1b17;
+      --ink: #f1ece2;
+      --muted: #a39b8c;
+      --line: #322d26;
+      --accent: #ff8a3d;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14120f;
+    --card: #1e1b17;
+    --ink: #f1ece2;
+    --muted: #a39b8c;
+    --line: #322d26;
+    --accent: #ff8a3d;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .25);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
+    line-height: 1.6;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  a { color: inherit; }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 56px 16px 40px; }
+
+  header { margin-bottom: 40px; }
+  .eyebrow {
+    font-size: 13px; letter-spacing: .12em; color: var(--accent); font-weight: 700;
+  }
+  h1 {
+    font-family: "Black Han Sans", sans-serif; font-weight: 400;
+    font-size: clamp(40px, 8vw, 64px); line-height: 1.1; margin: 6px 0 12px;
+  }
+  .lead { color: var(--muted); font-size: 16px; }
+  .count { color: var(--ink); font-weight: 700; }
+
+  .grid {
+    display: grid; gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+
+  .card {
+    position: relative;
+    display: flex; flex-direction: column;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    transition: transform .15s ease, border-color .15s ease;
+  }
+  a.card:hover { transform: translateY(-3px); border-color: var(--accent); }
+  a.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .emoji { font-size: 36px; line-height: 1; margin-bottom: 14px; }
+  .no {
+    position: absolute; top: 18px; right: 20px;
+    font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums;
+  }
+  .card h2 { font-size: 19px; margin-bottom: 6px; }
+  .card p { color: var(--muted); font-size: 14px; flex: 1; }
+  .meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line);
+    font-size: 13px; color: var(--muted);
+  }
+  .go { color: var(--accent); font-weight: 700; }
+
+  .card.soon {
+    background: transparent; box-shadow: none;
+    border-style: dashed; justify-content: center; align-items: center;
+    text-align: center; min-height: 200px; color: var(--muted);
+  }
+  .card.soon .emoji { opacity: .5; }
+
+  footer {
+    margin-top: 48px; font-size: 13px; color: var(--muted); text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">MYWEBS · 작은 전시관</div>
+    <h1>쓸데없이 재밌는 것들</h1>
+    <p class="lead">하나씩 만들어 모아두는 곳입니다. 지금 <span class="count" id="count">0</span>개 전시 중.</p>
+  </header>
+
+  <main class="grid" id="grid"></main>
+
+  <footer>새 작품은 폴더 하나에 HTML 하나로 만들고, 이 페이지의 목록에 한 줄 추가합니다.</footer>
+</div>
+
+<script>
+  // 새 작품을 만들면 여기에 한 항목만 추가하면 됩니다. (위에 있을수록 먼저 보임)
+  const works = [
+    {
+      path: "dramatic-reveal/",
+      emoji: "🥁",
+      title: "두구두구 중대발표",
+      desc: "아무 문구나 쓸데없이 웅장한 자막, 북소리, 폭죽과 함께 공개합니다. 링크로 보내서 상대를 긴장시키세요.",
+      date: "2026-11",
+    },
+  ];
+
+  const grid = document.getElementById("grid");
+  document.getElementById("count").textContent = works.length;
+
+  works.forEach((w, i) => {
+    const a = document.createElement("a");
+    a.className = "card";
+    a.href = w.path;
+    a.innerHTML = `
+      <span class="no">No.${String(works.length - i).padStart(2, "0")}</span>
+      <div class="emoji" aria-hidden="true"></div>
+      <h2></h2>
+      <p></p>
+      <div class="meta"><span class="date"></span><span class="go">구경하기 →</span></div>`;
+    a.querySelector(".emoji").textContent = w.emoji;
+    a.querySelector("h2").textContent = w.title;
+    a.querySelector("p").textContent = w.desc;
+    a.querySelector(".date").textContent = w.date || "";
+    grid.appendChild(a);
+  });
+
+  const soon = document.createElement("div");
+  soon.className = "card soon";
+  soon.innerHTML = `<div class="emoji" aria-hidden="true">🛠️</div><div>다음 작품 준비 중</div>`;
+  grid.appendChild(soon);
+</script>
+</body>
+</html>
